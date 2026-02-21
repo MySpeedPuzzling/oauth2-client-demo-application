@@ -386,7 +386,7 @@ function renderProfileCard(array $profile): void
             <div class="flex items-center gap-3">
                 <img src="https://myspeedpuzzling.com/img/speedpuzzling-logo.svg"
                      alt="MySpeedPuzzling"
-                     class="h-6 brightness-0 invert">
+                     class="h-6">
                 <span class="text-white font-bold">Profile</span>
             </div>
             <a href="/logout"
