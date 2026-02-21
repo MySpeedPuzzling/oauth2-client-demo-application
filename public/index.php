@@ -65,7 +65,6 @@ function sendPostRequest(string $url, array $formData, array $headers = []): arr
 
     $responseBody = curl_exec($curlHandle);
     $httpCode = curl_getinfo($curlHandle, CURLINFO_HTTP_CODE);
-    curl_close($curlHandle);
 
     return ['body' => $responseBody, 'httpCode' => $httpCode];
 }
@@ -90,7 +89,6 @@ function sendGetRequest(string $url, array $headers = []): array
 
     $responseBody = curl_exec($curlHandle);
     $httpCode = curl_getinfo($curlHandle, CURLINFO_HTTP_CODE);
-    curl_close($curlHandle);
 
     return ['body' => $responseBody, 'httpCode' => $httpCode];
 }
