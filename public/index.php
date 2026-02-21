@@ -298,6 +298,22 @@ function renderPage(?array $profile): void
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>MySpeedPuzzling OAuth2 Demo</title>
         <script src="https://cdn.tailwindcss.com"></script>
+        <script>
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        colors: {
+                            brand: {
+                                DEFAULT: '#E9746E',
+                                dark: '#D4625C',
+                                light: '#F5A8A4',
+                                50: '#FDF2F1',
+                            }
+                        }
+                    }
+                }
+            }
+        </script>
     </head>
     <body class="min-h-screen bg-gray-100 flex items-center justify-center p-4">
         <div class="w-full max-w-md">
@@ -329,12 +345,14 @@ function renderLoginScreen(): void
     ?>
     <div class="bg-white rounded-2xl shadow-lg p-8 text-center">
         <div class="mb-6">
-            <h1 class="text-2xl font-bold text-gray-900 mb-2">MySpeedPuzzling</h1>
+            <img src="https://myspeedpuzzling.com/img/speedpuzzling-logo.svg"
+                 alt="MySpeedPuzzling"
+                 class="h-10 mx-auto mb-4">
             <p class="text-gray-500 text-sm">OAuth2 Authorization Code Flow Demo</p>
         </div>
 
         <a href="/login"
-           class="inline-flex items-center justify-center gap-2 w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
+           class="inline-flex items-center justify-center gap-2 w-full bg-brand hover:bg-brand-dark text-white font-semibold py-3 px-6 rounded-lg transition-colors">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
@@ -366,10 +384,15 @@ function renderProfileCard(array $profile): void
     ?>
     <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
         <!-- Header -->
-        <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4 flex items-center justify-between">
-            <h1 class="text-white font-bold">MySpeedPuzzling Profile</h1>
+        <div class="bg-gradient-to-r from-brand to-brand-dark px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <img src="https://myspeedpuzzling.com/img/speedpuzzling-logo.svg"
+                     alt="MySpeedPuzzling"
+                     class="h-6 brightness-0 invert">
+                <span class="text-white font-bold">Profile</span>
+            </div>
             <a href="/logout"
-               class="text-blue-100 hover:text-white text-sm font-medium transition-colors">
+               class="text-brand-light hover:text-white text-sm font-medium transition-colors">
                 Sign out
             </a>
         </div>
@@ -380,10 +403,10 @@ function renderProfileCard(array $profile): void
                 <?php if (!empty($profile['avatar'])): ?>
                     <img src="<?= escapeHtml($profile['avatar']) ?>"
                          alt="Avatar"
-                         class="w-16 h-16 rounded-full object-cover ring-2 ring-blue-100">
+                         class="w-16 h-16 rounded-full object-cover ring-2 ring-brand-50">
                 <?php else: ?>
-                    <div class="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center">
-                        <span class="text-blue-600 text-xl font-bold">
+                    <div class="w-16 h-16 rounded-full bg-brand-50 flex items-center justify-center">
+                        <span class="text-brand text-xl font-bold">
                             <?= escapeHtml(mb_substr($profile['name'] ?? '?', 0, 1)) ?>
                         </span>
                     </div>
