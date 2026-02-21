@@ -130,6 +130,7 @@ function handleLogin(string $clientId, string $redirectUri, string $authorizeUrl
         'response_type' => 'code',
         'client_id' => $clientId,
         'redirect_uri' => $redirectUri,
+        'scope' => 'profile:read collections:read',
         'state' => $state,
     ]);
 
