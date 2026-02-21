@@ -163,15 +163,13 @@ function handleCallback(string $clientId, string $clientSecret, string $redirect
     // Clean up the state from session (it's single-use)
     unset($_SESSION['oauth2_state']);
 
-    // Check if the user denied access or if an error occurred
+    // Check if the user denied access or if an error occurred.
+    // Store the error in session and redirect to homepage to show it inline.
     if (isset($_GET['error'])) {
-        http_response_code(400);
-        echo 'Authorization error: ' . escapeHtml($_GET['error']);
+        $_SESSION['oauth2_error'] = $_GET['error'];
+        $_SESSION['oauth2_error_description'] = $_GET['error_description'] ?? null;
 
-        if (isset($_GET['error_description'])) {
-            echo ' — ' . escapeHtml($_GET['error_description']);
-        }
-
+        header('Location: /');
         exit;
     }
 
@@ -255,7 +253,13 @@ function handleLogout(): never
 function handleHome(): never
 {
     $profile = $_SESSION['profile'] ?? null;
-    renderPage($profile);
+
+    // Pull error from session (one-time flash message)
+    $error = $_SESSION['oauth2_error'] ?? null;
+    $errorDescription = $_SESSION['oauth2_error_description'] ?? null;
+    unset($_SESSION['oauth2_error'], $_SESSION['oauth2_error_description']);
+
+    renderPage($profile, $error, $errorDescription);
     exit;
 }
 
@@ -287,7 +291,7 @@ match ($requestPath) {
  *
  * @param array<string, mixed>|null $profile
  */
-function renderPage(?array $profile): void
+function renderPage(?array $profile, ?string $error = null, ?string $errorDescription = null): void
 {
     ?>
     <!DOCTYPE html>
@@ -316,6 +320,10 @@ function renderPage(?array $profile): void
     </head>
     <body class="min-h-screen bg-gray-100 flex items-center justify-center p-4">
         <div class="w-full max-w-md">
+
+            <?php if ($error !== null): ?>
+                <?php renderErrorBanner($error, $errorDescription); ?>
+            <?php endif; ?>
 
             <?php if ($profile === null): ?>
                 <?php renderLoginScreen(); ?>
@@ -366,6 +374,32 @@ function renderLoginScreen(): void
                 <li>Authorize this demo application</li>
                 <li>Get redirected back with your profile</li>
             </ol>
+        </div>
+    </div>
+    <?php
+}
+
+/**
+ * Render an inline error banner above the login screen.
+ */
+function renderErrorBanner(string $error, ?string $errorDescription): void
+{
+    ?>
+    <div class="bg-red-50 border border-red-200 rounded-2xl p-4 mb-4 flex items-start gap-3">
+        <div class="shrink-0 w-9 h-9 rounded-full bg-red-100 flex items-center justify-center mt-0.5">
+            <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+        </div>
+        <div class="min-w-0">
+            <p class="text-sm font-semibold text-red-800">Authorization Denied</p>
+            <p class="text-sm text-red-600 mt-0.5">
+                <?= escapeHtml($errorDescription ?? 'The authorization request was not completed.') ?>
+            </p>
+            <span class="inline-block mt-2 text-xs font-mono bg-red-100 text-red-400 px-2 py-0.5 rounded">
+                <?= escapeHtml($error) ?>
+            </span>
         </div>
     </div>
     <?php
