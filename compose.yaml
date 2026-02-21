@@ -1,0 +1,11 @@
+services:
+  web:
+    image: ghcr.io/myspeedpuzzling/web-base-php85:main
+    restart: unless-stopped
+    tty: true
+    volumes:
+      - ./public:/app/public
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
