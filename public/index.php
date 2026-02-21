@@ -199,7 +199,7 @@ function handleCallback(string $clientId, string $clientSecret, string $redirect
 
     if ($tokenResponse['httpCode'] !== 200) {
         http_response_code(502);
-        echo 'Token exchange failed (HTTP ' . $tokenResponse['httpCode'] . ')';
+        echo 'Token exchange failed (HTTP ' . $tokenResponse['httpCode'] . ")\n\n" . $tokenResponse['body'];
         exit;
     }
 
@@ -318,8 +318,8 @@ function renderPage(?array $profile, ?string $error = null, ?string $errorDescri
             }
         </script>
     </head>
-    <body class="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-        <div class="w-full max-w-md">
+    <body class="bg-gray-100 p-4 pt-16 sm:pt-24">
+        <div class="w-full max-w-md mx-auto">
 
             <?php if ($error !== null): ?>
                 <?php renderErrorBanner($error, $errorDescription); ?>
