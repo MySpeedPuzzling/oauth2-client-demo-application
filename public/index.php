@@ -241,7 +241,10 @@ function handleCallback(string $clientId, string $clientSecret, string $redirect
  */
 function handleLogout(): never
 {
-    session_destroy();
+    // No cookie => no session was started; destroying would raise a warning.
+    if (session_status() === PHP_SESSION_ACTIVE) {
+        session_destroy();
+    }
 
     header('Location: /');
     exit;
@@ -267,9 +270,22 @@ function handleHome(): never
 // Session & Routing
 // ──────────────────────────────────────────────
 
-session_start();
-
 $requestPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+
+// Sessions are short-lived here (one OAuth2 round-trip), not the 30 days the base
+// image defaults to. Must be set before session_start() to affect GC.
+ini_set('session.gc_maxlifetime', '3600');
+
+// Start the session only when it can matter: the client already has a session
+// cookie (resume it), or the route is about to write one (/login seeds the CSRF
+// state). An unconditional session_start() would mint a session file for every
+// cookie-less request — and `/` is health-probed tens of thousands of times a day,
+// which accumulated ~26k orphaned session files daily until the container neared
+// its memory limit. Reading $_SESSION without an active session is safe: every
+// access uses `?? null` and unset() tolerates it.
+if (isset($_COOKIE[session_name()]) || $requestPath === '/login') {
+    session_start();
+}
 
 match ($requestPath) {
     '/login' => handleLogin($clientId, $redirectUri, $authorizeUrl),
