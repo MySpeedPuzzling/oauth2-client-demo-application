@@ -7,4 +7,9 @@ ENV PHP_OPCACHE_VALIDATE_TIMESTAMPS=0
 # so an unconditional `rm` fails the build. `-f` keeps this correct either way.
 RUN rm -f $PHP_INI_DIR/conf.d/docker-php-ext-xdebug.ini
 
+# The base image leaves PHP defaults on (display_errors=1, expose_php=1): never show errors
+# or the PHP version to clients. Errors are still logged (stderr -> docker logs).
+RUN printf "display_errors = Off\ndisplay_startup_errors = Off\nlog_errors = On\nexpose_php = Off\n" \
+        > $PHP_INI_DIR/conf.d/98-production.ini
+
 COPY ./public /app/public
